@@ -59,11 +59,28 @@
       id
     })
 
+    // Returns an object that describes a specific event that occurred
     const receiveDataAction = (todos, goals) => ({
       type: RECEIVE_DATA,
       todos,
       goals
     })
+
+    // Returns a function that gets dispatch as an argument
+      // Add another middleware to check if the action creator returns an object or function
+      //  If it is a function, it passes dispatch as an argument
+    const handleDeleteTodo = (todo) => {
+
+      return (dispatch) => {
+        dispatch(removeTodoAction(todo.id))
+
+        return API.deleteTodo(todo.id)
+          .catch(() => {
+            dispatch(addTodoAction(todo))
+            alert('An error occurred. Try again.')
+        })
+      }
+    }
 
     // Code specific to the app - the user would write it
     // REDUCER FUNCTION - MUST BE PURE
@@ -133,12 +150,21 @@
       return result
     }
 
+    // Middleware to check if the action creator returns an object or a function
+    const thunk = (store) => (next) => (action) => {
+      if(typeof action === 'function'){
+        return action(store.dispatch)
+      }
+
+      return next(action)
+    }
+
     // CREATE STORE
     const store = Redux.createStore(Redux.combineReducers({
       todos,
       goals,
       loading
-    }), Redux.applyMiddleware(checker, logger))
+    }), Redux.applyMiddleware(thunk, checker, logger))
 
   </script>
   <script type='text/babel'>
@@ -196,13 +222,7 @@
         // we're assuming the change will succeed correctly on the server, so we update the UI immediately, and then only roll back to the original state if the API returns an error. 
         // Doing optimistic updates is better because it provides a more realistic and dynamic experience to the user.
       removeItem = todo => {
-        this.props.store.dispatch(removeTodoAction(todo.id))
-
-        return API.deleteTodo(todo.id)
-          .catch(() => {
-            this.props.store.dispatch(addTodoAction(todo))
-            alert('An error occurred. Try again.')
-          })
+        this.props.store.dispatch(handleDeleteTodo(todo))
       }
 
       toggleItem = id => {
