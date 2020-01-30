@@ -95,6 +95,18 @@
       }
     }
 
+    const handleDeleteGoal = (goal) => {
+      return (dispatch) => {
+        dispatch(removeGoalAction(goal.id))
+
+        return API.deleteGoal(goal.id)
+          .catch(() => {
+            dispatch(addGoalAction(goal))
+            alert('An error occurred. Try again.')
+          })
+      }
+    }
+
     // Code specific to the app - the user would write it
     // REDUCER FUNCTION - MUST BE PURE
     const todos = (state = [], action) => {
@@ -271,14 +283,7 @@
       }
 
       removeItem = goal => {
-        this.props.store.dispatch(removeGoalAction(goal.id))
-
-        return API.deleteGoal(goal.id)
-          .catch(() => {
-            this.props.store.dispatch(addGoalAction(goal))
-            alert('An error occurred. Try again.')
-
-          })
+        this.props.store.dispatch(handleDeleteGoal(goal))
       }
 
       render() {
