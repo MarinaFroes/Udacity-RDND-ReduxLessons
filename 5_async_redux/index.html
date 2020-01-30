@@ -120,6 +120,16 @@
       }
     }
 
+    const handleToggle = id => {
+      return (dispatch) => {
+        API.saveTodoToggle(id)
+          .catch(() => {
+            dispatch(toggleTodoAction(id))
+            alert('An error occurred. Try again.')
+          })
+      }
+    }
+
     // Code specific to the app - the user would write it
     // REDUCER FUNCTION - MUST BE PURE
     const todos = (state = [], action) => {
@@ -223,8 +233,7 @@
     }
 
     class Todos extends React.Component {
-      // No optimistic update in the addItem method
-        // The id is generated in the API, it doesn't make sense to generate the todo in the UI and then get the id of the API
+      
       addItem = e => {
         e.preventDefault()
         this.props.store.dispatch(handleAddTodo(
@@ -232,21 +241,13 @@
           () => this.input.value = ''
         ))
       }
-      // Optimistic update - better UX
-        // we're assuming the change will succeed correctly on the server, so we update the UI immediately, and then only roll back to the original state if the API returns an error. 
-        // Doing optimistic updates is better because it provides a more realistic and dynamic experience to the user.
+    
       removeItem = todo => {
         this.props.store.dispatch(handleDeleteTodo(todo))
       }
 
       toggleItem = id => {
-        this.props.store.dispatch(toggleTodoAction(id))
-
-        return API.saveTodoToggle(id)
-          .catch(() => {
-            this.props.store.dispatch(toggleTodoAction(id))
-            alert('An error occurred. Try again.')
-          })
+        this.props.store.dispatch(handleToggle(id))
       }
 
       render() {
