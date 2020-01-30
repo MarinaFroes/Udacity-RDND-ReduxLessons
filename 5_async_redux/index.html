@@ -82,6 +82,19 @@
       }
     }
 
+    const handleAddGoal = (name, cb) => {
+      return (dispatch) => {
+        API.saveGoal(name)
+        .then((goal) => {
+          dispatch(addGoalAction(goal))
+          cb()
+        })
+        .catch(() => {
+          alert('There was an error. Try again.')
+        })
+      }
+    }
+
     // Code specific to the app - the user would write it
     // REDUCER FUNCTION - MUST BE PURE
     const todos = (state = [], action) => {
@@ -250,15 +263,11 @@
 
       addItem = (e) => {
         e.preventDefault()
-        
-        return API.saveGoal(this.input.value)
-          .then((goal) => {
-            this.props.store.dispatch(addGoalAction(goal))
-            this.input.value = ''
-          })
-          .catch(() => {
-            alert('There was an error. Try again.')
-          })
+
+        this.props.store.dispatch(handleAddGoal(
+          this.input.value,
+          () => this.input.value = ''
+        ))
       }
 
       removeItem = goal => {
