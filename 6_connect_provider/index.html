@@ -284,24 +284,9 @@
       }
     }
 
-    class ConnectedTodos extends React.Component {
-      render() {
-        return (
-          <Context.Consumer>
-            {(store) => {
-              const { todos } = store.getState()
-              return (
-                <Todos 
-                  todos={todos}
-                  dispatch={store.dispatch}
-                />
-              )
-            }}
-          </Context.Consumer>
-        )
-        
-      }
-    }
+    const ConnectedTodos = connect((store) => ({
+        todos: store.todos
+      }))(Todos)
     
     class Goals extends React.Component {
       addItem = (e) => {
@@ -338,23 +323,9 @@
       }
     }
 
-    class ConnectedGoals extends React.Component {
-      render() {
-        return (
-          <Context.Consumer>
-            {(store) => {
-              const { goals } = store.getState()
-              return (
-                <Goals
-                  goals={goals}
-                  dispatch={store.dispatch}
-                />
-              )
-            }}
-          </Context.Consumer>
-        )
-      }
-    }
+    const ConnectedGoals = connect((store) => ({
+        goals: store.goals
+      }))(Goals)
 
     class App extends React.Component {
       componentDidMount() {
