@@ -1,7 +1,7 @@
 import API from 'goals-todos-api'
 
 // ACTION TYPE
-const RECEIVE_DATA = 'RECEIVE_DATA'
+export const RECEIVE_DATA = 'RECEIVE_DATA'
 
 // ACTION CREATOR
 const receiveData = (todos, goals) => ({
